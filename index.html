@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ELG Stereometrie – galerie</title>
+  <script src="data.js"></script>
+  <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+  <style>
+    :root{--bg:#f5f7fb;--panel:#ffffff;--ink:#172033;--muted:#667085;--line:#d9e1ee;--accent:#476cff;--soft:#eef2ff;--shadow:0 14px 40px rgba(24,38,66,.12);--radius:22px}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);height:100vh;overflow:hidden}
+    .app{display:grid;grid-template-columns:340px 1fr;height:100vh;gap:14px;padding:14px}.sidebar,.main{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}.sidebar{display:flex;flex-direction:column}.head{padding:18px 18px 12px;border-bottom:1px solid var(--line)}h1{font-size:20px;margin:0 0 6px}.sub{font-size:13px;color:var(--muted);line-height:1.35}.search{padding:12px 14px;border-bottom:1px solid var(--line)}input{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;font-size:15px}.tree{overflow:auto;padding:10px 10px 18px}.cat{margin:5px 0}.catTitle{font-weight:750;padding:10px 12px;border-radius:14px;background:#f8fafc;cursor:pointer;display:flex;justify-content:space-between;gap:8px}.items{margin:5px 0 10px 10px;border-left:2px solid var(--line);padding-left:8px}.item{padding:9px 10px;border-radius:13px;cursor:pointer;font-size:14px;line-height:1.25;color:#26344f}.item:hover{background:#f6f8ff}.item.active{background:var(--soft);color:#1d3fd7;font-weight:750}.main{display:flex;flex-direction:column;min-width:0}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}.titleBlock{min-width:0}.crumb{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.title{font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.btn{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;font-weight:750;cursor:pointer;color:var(--ink)}.btn:hover{background:#f8fafc}.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}.btn[disabled]{opacity:.4;cursor:not-allowed}.viewer{position:relative;flex:1;min-height:0;background:linear-gradient(135deg,#f8fafc,#eef2ff);display:flex;align-items:center;justify-content:center;padding:18px}.imageWrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center}.imageWrap img{max-width:100%;max-height:100%;object-fit:contain;border-radius:16px;box-shadow:0 10px 32px rgba(18,26,43,.14);background:white}.arrow{position:absolute;top:50%;transform:translateY(-50%);width:54px;height:72px;border:0;border-radius:18px;background:rgba(255,255,255,.86);box-shadow:0 8px 26px rgba(15,23,42,.18);font-size:34px;cursor:pointer}.arrow.left{left:22px}.arrow.right{right:22px}.counter{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(17,24,39,.76);color:white;border-radius:999px;padding:8px 13px;font-weight:750;font-size:13px}.ggbBox{width:100%;height:100%;background:white;border-radius:16px;overflow:hidden;border:1px solid var(--line)}.empty{color:var(--muted);text-align:center;max-width:520px;line-height:1.5}.mobileToggle{display:none}.note{font-size:12px;color:var(--muted);padding:0 16px 10px}.hidden{display:none!important}
+    @media(max-width:850px){body{overflow:auto;height:auto}.app{display:block;height:auto;padding:10px}.sidebar{height:42vh;margin-bottom:10px}.main{height:58vh}.mobileToggle{display:inline-block}.toolbar{align-items:flex-start}.title{font-size:16px}.viewer{padding:8px}.arrow{width:44px;height:60px;font-size:28px}.arrow.left{left:10px}.arrow.right{right:10px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="head"><h1>ELG Stereometrie</h1><div class="sub">Vyber příklad podle složek. Pak listuj obrázky nebo otevři živý GeoGebra krok.</div></div>
+    <div class="search"><input id="search" placeholder="Hledat příklad nebo složku…"></div>
+    <div class="tree" id="tree"></div>
+  </aside>
+  <main class="main">
+    <div class="toolbar">
+      <div class="titleBlock"><div class="crumb" id="crumb">—</div><div class="title" id="title">Vyber příklad vlevo</div></div>
+      <div class="controls">
+        <button class="btn mobileToggle" id="showTree">☰ strom</button>
+        <button class="btn primary" id="modeImg">Obrázky</button>
+        <button class="btn" id="modeGgb">GeoGebra</button>
+        <button class="btn" id="openFile">Otevřít soubor</button>
+      </div>
+    </div>
+    <div class="note" id="note">Šipky na krajích obrázku i klávesy ← → posouvají kroky.</div>
+    <section class="viewer" id="viewer">
+      <button class="arrow left" id="prev">‹</button>
+      <div class="imageWrap" id="imageWrap"><div class="empty">Vyber vlevo konkrétní příklad.</div></div>
+      <div class="ggbBox hidden" id="ggbBox"><div id="ggbApplet" style="width:100%;height:100%"></div></div>
+      <button class="arrow right" id="next">›</button>
+      <div class="counter" id="counter">0 / 0</div>
+    </section>
+  </main>
+</div>
+<script>
+const examples = window.STEREO_DATA.examples;
+let current = examples.find(e => e.images.length) || examples[0];
+let step = 0, mode = 'img', applet = null;
+const el = id => document.getElementById(id);
+function basename(p){return (p||'').split('/').pop()}
+function stepTitle(entry){ return basename(entry?.orig || entry?.safe || '').replace(/\.(png|ggb)$/i,''); }
+function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function renderTree(){
+  const q = norm(el('search').value);
+  const groups = new Map();
+  examples.forEach((ex,i)=>{
+    const text = norm(ex.category+' '+ex.title+' '+ex.origPath);
+    if(q && !text.includes(q)) return;
+    if(!groups.has(ex.category)) groups.set(ex.category, []);
+    groups.get(ex.category).push({ex,i});
+  });
+  el('tree').innerHTML = '';
+  for(const [cat, arr] of groups){
+    const box=document.createElement('div'); box.className='cat';
+    const title=document.createElement('div'); title.className='catTitle'; title.innerHTML=`<span>${cat}</span><span>${arr.length}</span>`;
+    const items=document.createElement('div'); items.className='items';
+    arr.forEach(({ex,i})=>{ const it=document.createElement('div'); it.className='item'+(ex===current?' active':''); it.textContent=ex.title; it.onclick=()=>selectExample(ex); items.appendChild(it); });
+    title.onclick=()=>items.classList.toggle('hidden'); box.append(title,items); el('tree').appendChild(box);
+  }
+}
+function selectExample(ex){ current=ex; step=0; renderTree(); render(); if(innerWidth<850) el('sidebar').style.display='none'; }
+function render(){
+  if(!current) return;
+  const list = mode==='img' ? current.images : current.ggbs;
+  if(step>=list.length) step=Math.max(0,list.length-1);
+  el('crumb').textContent=current.category;
+  el('title').textContent=current.title;
+  el('counter').textContent=list.length ? `${step+1} / ${list.length} · ${stepTitle(list[step])}` : '0 / 0';
+  el('prev').disabled=list.length<2; el('next').disabled=list.length<2;
+  el('openFile').disabled=!list.length;
+  el('modeImg').classList.toggle('primary',mode==='img'); el('modeGgb').classList.toggle('primary',mode==='ggb');
+  el('imageWrap').classList.toggle('hidden',mode!=='img'); el('ggbBox').classList.toggle('hidden',mode!=='ggb');
+  if(mode==='img') renderImage(list); else renderGgb(list);
+}
+function renderImage(list){
+  if(!list.length){ el('imageWrap').innerHTML='<div class="empty">U tohoto příkladu nejsou PNG obrázky, ale můžeš zkusit režim GeoGebra.</div>'; return; }
+  const src='files/'+encodeURI(list[step].safe).replace(/#/g,'%23');
+  el('imageWrap').innerHTML=`<img src="${src}" alt="${stepTitle(list[step])}">`;
+}
+function renderGgb(list){
+  if(!list.length){ el('ggbApplet').innerHTML='<div class="empty" style="padding:30px">U tohoto příkladu není GeoGebra soubor.</div>'; return; }
+  const file='files/'+encodeURI(list[step].safe).replace(/#/g,'%23');
+  el('ggbApplet').innerHTML='';
+  const params={appName:'classic',width:el('ggbBox').clientWidth||900,height:el('ggbBox').clientHeight||600,showToolBar:true,showAlgebraInput:false,showMenuBar:true,enableRightClick:true,filename:file,appletOnLoad:function(){}};
+  try { applet = new GGBApplet(params, true); applet.inject('ggbApplet'); }
+  catch(e){ el('ggbApplet').innerHTML='<div class="empty" style="padding:30px">GeoGebra applet se nepodařilo načíst. Obrázkový režim ale funguje lokálně.</div>'; }
+}
+function move(d){ const list=mode==='img'?current.images:current.ggbs; if(!list.length) return; step=(step+d+list.length)%list.length; render(); }
+el('prev').onclick=()=>move(-1); el('next').onclick=()=>move(1);
+el('modeImg').onclick=()=>{mode='img'; step=0; render();};
+el('modeGgb').onclick=()=>{mode='ggb'; step=0; render();};
+el('openFile').onclick=()=>{ const list=mode==='img'?current.images:current.ggbs; if(list[step]) window.open('files/'+encodeURI(list[step].safe).replace(/#/g,'%23'),'_blank'); };
+el('search').oninput=renderTree; el('showTree').onclick=()=>{el('sidebar').style.display='flex'};
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')move(-1); if(e.key==='ArrowRight')move(1);});
+let startX=0; el('viewer').addEventListener('touchstart',e=>startX=e.touches[0].clientX,{passive:true}); el('viewer').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX; if(Math.abs(dx)>50) move(dx>0?-1:1);},{passive:true});
+window.addEventListener('resize',()=>{ if(mode==='ggb') render(); });
+renderTree(); render();
+</script>
+</body>
+</html>
